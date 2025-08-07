@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.tlagx.unsubduty.commands.AHideCommand;
 import com.tlagx.unsubduty.commands.AdminCommand;
 import com.tlagx.unsubduty.commands.AdminsCommand;
 import com.tlagx.unsubduty.commands.DutyCommand;
@@ -12,6 +13,7 @@ import com.tlagx.unsubduty.listeners.PlayerListener;
 import com.tlagx.unsubduty.localization.LocaleManager;
 import com.tlagx.unsubduty.services.DutyService;
 import com.tlagx.unsubduty.services.HideService;
+import com.tlagx.unsubduty.storage.UserStorage;
 
 import net.luckperms.api.LuckPerms;
 
@@ -20,6 +22,7 @@ public final class UnsubDuty extends JavaPlugin {
     private ConfigManager configManager;
     private DutyService dutyService;
     private HideService hideService;
+    private UserStorage userStorage;
     private LuckPerms luckPerms;
     private LocaleManager localeManager;
 
@@ -37,8 +40,9 @@ public final class UnsubDuty extends JavaPlugin {
         
         this.configManager = new ConfigManager(this);
         this.localeManager = new LocaleManager(this);
+        this.userStorage = new UserStorage(this);
         this.dutyService = new DutyService(this, luckPerms, configManager);
-        this.hideService = new HideService();
+        this.hideService = new HideService(userStorage);
         
         registerCommands();
         registerEvents();
@@ -64,6 +68,7 @@ public final class UnsubDuty extends JavaPlugin {
         getCommand("alogin").setExecutor(new AdminCommand(dutyService, this));
         getCommand("admins").setExecutor(new AdminsCommand(dutyService, hideService, this));
         getCommand("duty").setExecutor(new DutyCommand(dutyService, hideService, this));
+        getCommand("ahide").setExecutor(new AHideCommand(hideService, this));
     }
 
     private void registerEvents() {
@@ -89,6 +94,10 @@ public final class UnsubDuty extends JavaPlugin {
 
     public HideService getHideService() {
         return hideService;
+    }
+
+    public UserStorage getUserStorage() {
+        return userStorage;
     }
 
     public LuckPerms getLuckPerms() {

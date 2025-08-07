@@ -36,8 +36,6 @@ public class DutyCommand implements CommandExecutor {
         if (args.length == 0) {
             player.sendMessage(plugin.getLocaleManager().getColor("duty_title").replace("%version%", plugin.getDescription().getVersion()));
             player.sendMessage(plugin.getLocaleManager().getColor("duty_available_commands"));
-            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_hide"));
-            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_show"));
             player.sendMessage(plugin.getLocaleManager().getColor("duty_help_set"));
             player.sendMessage(plugin.getLocaleManager().getColor("duty_help_roles"));
             return true;
@@ -45,21 +43,11 @@ public class DutyCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
             case "hide":
-                if (!player.hasPermission("unsubduty.use")) {
-                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
-                    return true;
-                }
-                hideService.setHidden(player.getUniqueId(), true);
-                player.sendMessage(plugin.getLocaleManager().getColor("hide_success"));
+                player.sendMessage(plugin.getLocaleManager().getColor("duty_usage"));
                 break;
 
             case "show":
-                if (!player.hasPermission("unsubduty.use")) {
-                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
-                    return true;
-                }
-                hideService.setHidden(player.getUniqueId(), false);
-                player.sendMessage(plugin.getLocaleManager().getColor("show_success"));
+                player.sendMessage(plugin.getLocaleManager().getColor("duty_usage"));
                 break;
 
             case "set":
