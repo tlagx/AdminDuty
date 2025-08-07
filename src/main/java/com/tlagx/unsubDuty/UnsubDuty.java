@@ -8,6 +8,7 @@ import com.tlagx.unsubduty.commands.AHideCommand;
 import com.tlagx.unsubduty.commands.AdminCommand;
 import com.tlagx.unsubduty.commands.AdminsCommand;
 import com.tlagx.unsubduty.commands.DutyCommand;
+import com.tlagx.unsubduty.commands.DutyTabCompleter;
 import com.tlagx.unsubduty.config.ConfigManager;
 import com.tlagx.unsubduty.listeners.PlayerListener;
 import com.tlagx.unsubduty.localization.LocaleManager;
@@ -68,6 +69,7 @@ public final class UnsubDuty extends JavaPlugin {
         getCommand("alogin").setExecutor(new AdminCommand(dutyService, this));
         getCommand("admins").setExecutor(new AdminsCommand(dutyService, hideService, this));
         getCommand("duty").setExecutor(new DutyCommand(dutyService, hideService, this));
+        getCommand("duty").setTabCompleter(new DutyTabCompleter(this));
         getCommand("ahide").setExecutor(new AHideCommand(hideService, this));
     }
 
