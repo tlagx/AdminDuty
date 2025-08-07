@@ -27,7 +27,7 @@ permissions:
     default: true
   unsubduty.view:
     description: Allows viewing admin list and duty notifications
-    default: op
+    default: true
   unsubduty.hide:
     description: Allows hiding/showing admin status
     default: op

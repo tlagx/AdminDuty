@@ -89,9 +89,11 @@ public class DutyService {
                 .findFirst()
                 .orElse(dutyRank.getToGroup());
 
-            // Find the DutyRank for the current group to get the correct leave message
+            // Find the DutyRank for the current group based on player's permissions
             DutyRank currentRank = configManager.getAllDutyRanksSorted().stream()
+                .sorted((r1, r2) -> Integer.compare(r2.getPriority(), r1.getPriority()))
                 .filter(r -> r.getToGroup().equals(currentGroup))
+                .filter(r -> player.hasPermission(r.getPermission()))
                 .findFirst()
                 .orElse(dutyRank);
 
