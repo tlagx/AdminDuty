@@ -3,7 +3,6 @@ package com.tlagx.unsubduty.commands;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,95 +27,96 @@ public class DutyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(plugin.getLocaleManager().getColor("player_only"));
             return true;
         }
 
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            player.sendMessage(ChatColor.GREEN + "=-=UnsubDuty " + plugin.getDescription().getVersion() + "=-=");
-            player.sendMessage(ChatColor.GREEN + "Available commands:");
-            player.sendMessage(ChatColor.GREEN + "/duty hide - Hide your nickname");
-            player.sendMessage(ChatColor.GREEN + "/duty show - Show your nickname");
-            player.sendMessage(ChatColor.GREEN + "/duty set <player> <rank> - Set rank for a player");
-            player.sendMessage(ChatColor.GREEN + "/duty roles - List all available ranks");
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_title").replace("%version%", plugin.getDescription().getVersion()));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_available_commands"));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_hide"));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_show"));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_set"));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_roles"));
             return true;
         }
 
         switch (args[0].toLowerCase()) {
             case "hide":
                 if (!player.hasPermission("unsubduty.use")) {
-                    player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
                     return true;
                 }
                 hideService.setHidden(player.getUniqueId(), true);
-                player.sendMessage(ChatColor.GREEN + "Your nickname is now hidden in /admins.");
+                player.sendMessage(plugin.getLocaleManager().getColor("hide_success"));
                 break;
 
             case "show":
                 if (!player.hasPermission("unsubduty.use")) {
-                    player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
                     return true;
                 }
                 hideService.setHidden(player.getUniqueId(), false);
-                player.sendMessage(ChatColor.GREEN + "Your nickname is now visible in /admins.");
+                player.sendMessage(plugin.getLocaleManager().getColor("show_success"));
                 break;
 
             case "set":
                 if (!player.hasPermission("unsubduty.admin")) {
-                    player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
                     return true;
                 }
 
                 if (args.length < 3) {
-                    player.sendMessage(ChatColor.RED + "Usage: /duty set <player> <rank>");
+                    player.sendMessage(plugin.getLocaleManager().getColor("set_usage"));
                     return true;
                 }
 
                 Player target = Bukkit.getPlayer(args[1]);
                 if (target == null) {
-                    player.sendMessage(ChatColor.RED + "Player not found: " + args[1]);
+                    player.sendMessage(plugin.getLocaleManager().getColor("player_not_found").replace("%player%", args[1]));
                     return true;
                 }
 
                 String rankKey = args[2].toLowerCase();
                 if (!plugin.getConfigManager().getDutyRankByKey(rankKey).isPresent()) {
-                    player.sendMessage(ChatColor.RED + "Invalid rank: " + args[2]);
+                    player.sendMessage(plugin.getLocaleManager().getColor("invalid_rank").replace("%rank%", args[2]));
                     return true;
                 }
 
                 if (dutyService.setAdminRank(target.getUniqueId(), rankKey)) {
-                    player.sendMessage(ChatColor.GREEN + "Successfully set " + target.getName() + "'s rank to " + rankKey);
-                    target.sendMessage(ChatColor.GREEN + "Your duty rank has been set to " + rankKey);
+                    player.sendMessage(plugin.getLocaleManager().getColor("set_success").replace("%target%", target.getName()).replace("%rank%", rankKey));
+                    target.sendMessage(plugin.getLocaleManager().getColor("set_target_message").replace("%rank%", rankKey));
                 } else {
-                    player.sendMessage(ChatColor.RED + "Failed to set rank for " + target.getName());
+                    player.sendMessage(plugin.getLocaleManager().getColor("set_failed").replace("%target%", target.getName()));
                 }
                 break;
 
             case "roles":
                 if (!player.hasPermission("unsubduty.admin")) {
-                    player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
                     return true;
                 }
 
                 List<DutyRank> ranks = plugin.getConfigManager().getAllDutyRanksSorted();
                 if (ranks.isEmpty()) {
-                    player.sendMessage(ChatColor.RED + "No duty roles configured!");
+                    player.sendMessage(plugin.getLocaleManager().getColor("no_ranks_configured"));
                     return true;
                 }
 
-                player.sendMessage(ChatColor.GREEN + "Available duty roles:");
+                player.sendMessage(plugin.getLocaleManager().getColor("available_roles"));
                 ranks.forEach(rank -> {
                     String rankName = rank.getRankName() != null ? rank.getRankName() : "Unknown";
                     String key = rank.getKey() != null ? rank.getKey() : "unknown";
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "  " + rankName + " &7(" + key + ")"));
+                    player.sendMessage(plugin.getLocaleManager().getColor("role_format")
+                            .replace("%name%", rankName)
+                            .replace("%key%", key));
                 });
                 break;
 
             default:
-                player.sendMessage(ChatColor.RED + "Usage: /duty <hide|show|set|roles>");
+                player.sendMessage(plugin.getLocaleManager().getColor("duty_usage"));
                 break;
         }
 

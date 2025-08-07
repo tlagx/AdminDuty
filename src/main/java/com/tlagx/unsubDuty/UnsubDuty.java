@@ -9,6 +9,7 @@ import com.tlagx.unsubduty.commands.AdminsCommand;
 import com.tlagx.unsubduty.commands.DutyCommand;
 import com.tlagx.unsubduty.config.ConfigManager;
 import com.tlagx.unsubduty.listeners.PlayerListener;
+import com.tlagx.unsubduty.localization.LocaleManager;
 import com.tlagx.unsubduty.services.DutyService;
 import com.tlagx.unsubduty.services.HideService;
 
@@ -20,13 +21,14 @@ public final class UnsubDuty extends JavaPlugin {
     private DutyService dutyService;
     private HideService hideService;
     private LuckPerms luckPerms;
+    private LocaleManager localeManager;
 
     @Override
     public void onEnable() {
         instance = this;
         
         if (!setupLuckPerms()) {
-            getLogger().severe("LuckPerms not found! Disabling plugin...");
+            getLogger().severe(getLocaleManager().get("luckperms_not_found"));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -34,18 +36,19 @@ public final class UnsubDuty extends JavaPlugin {
         saveDefaultConfig();
         
         this.configManager = new ConfigManager(this);
+        this.localeManager = new LocaleManager(this);
         this.dutyService = new DutyService(this, luckPerms, configManager);
         this.hideService = new HideService();
         
         registerCommands();
         registerEvents();
         
-        getLogger().info("UnsubDuty enabled successfully!");
+        getLogger().info(getLocaleManager().get("plugin_enabled"));
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("UnsubDuty disabled!");
+        getLogger().info(getLocaleManager().get("plugin_disabled"));
     }
 
     private boolean setupLuckPerms() {
@@ -58,7 +61,7 @@ public final class UnsubDuty extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("alogin").setExecutor(new AdminCommand(dutyService));
+        getCommand("alogin").setExecutor(new AdminCommand(dutyService, this));
         getCommand("admins").setExecutor(new AdminsCommand(dutyService, hideService, this));
         getCommand("duty").setExecutor(new DutyCommand(dutyService, hideService, this));
     }
@@ -90,5 +93,9 @@ public final class UnsubDuty extends JavaPlugin {
 
     public LuckPerms getLuckPerms() {
         return luckPerms;
+    }
+
+    public LocaleManager getLocaleManager() {
+        return localeManager;
     }
 }

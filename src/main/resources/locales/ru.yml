@@ -1,0 +1,57 @@
+# Russian localization for UnsubDuty
+prefix: "&a[UnsubDuty] &r"
+no_permission: "&cУ вас нет прав для использования этой команды."
+player_only: "&cЭта команда доступна только игрокам."
+player_not_found: "&cИгрок не найден: %player%"
+invalid_rank: "&cНеверный ранг: %rank%"
+no_ranks_configured: "&cНастроенные ранги отсутствуют!"
+
+# Команда /duty
+duty_title: "&a=-= UnsubDuty %version% =-="
+duty_available_commands: "&aДоступные команды:"
+duty_help_hide: "&a/duty hide - Скрыть никнейм"
+duty_help_show: "&a/duty show - Показать никнейм"
+duty_help_set: "&a/duty set <игрок> <ранг> - Установить ранг игроку"
+duty_help_roles: "&a/duty roles - Список всех рангов"
+duty_usage: "&cИспользование: /duty <hide|show|set|roles>"
+
+# Команда /duty hide
+hide_success: "&aВаш никнейм теперь скрыт в списке админов."
+
+# Команда /duty show
+show_success: "&aВаш никнейм теперь виден в списке админов."
+
+# Команда /duty set
+set_usage: "&cИспользование: /duty set <игрок> <ранг>"
+set_success: "&aУспешно установлен ранг %target% на %rank%"
+set_target_message: "&aВаш ранг дежурства установлен на %rank%"
+set_failed: "&cНе удалось установить ранг для %target%"
+
+# Команда /duty roles
+available_roles: "&aДоступные ранги:"
+role_format: "  %name% &7(%key%)"
+
+# Команда /admins
+admins_title: "&aСписок администрации:"
+no_duty_admins: "&eНет администраторов онлайн."
+in_duty: "&aНа дежурстве"
+not_in_duty: "&cНе на дежурстве"
+hidden_name: "&kСкрыт&f"
+hidden_admin: "&7%name%&f"
+
+# Системные сообщения
+plugin_enabled: "UnsubDuty успешно включен!"
+plugin_disabled: "UnsubDuty отключен!"
+luckperms_not_found: "LuckPerms не найден! Отключение плагина..."
+loading_duty_levels: "Загрузка рангов дежурства из config.yml..."
+loaded_duty_rank: "Загружен ранг дежурства: %key% [permission=%permission%, to-group=%group%, rank-name=%name%, priority=%priority%]"
+total_ranks_loaded: "Всего загружено рангов: %count%"
+no_duty_levels: "Секция duty-levels не найдена в config.yml!"
+default_access_message: "&cТвоя роль не настроена."
+admins_list_format: "%status% %name% [%rank%&r] – %duty%"
+hide_format: "&kСкрыт&f"
+
+# Ошибки
+cannot_handle_op: "&cПлагин не может правильно обработать данного игрока."
+group_not_configured: "&cОшибка: группа для ранга не настроена."
+user_data_error: "&cОшибка при получении данных пользователя."

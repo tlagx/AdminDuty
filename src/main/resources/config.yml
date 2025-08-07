@@ -1,23 +1,15 @@
-# UnsubDuty Configuration
-# Duty system configuration for Bukkit servers
+# Language setting (ru, en, de, etc.)
+language: en
 
 # Default message when no duty role is configured
 default-access-message: "&cТвоя роль не настроена."
 
-# Admin list display format
-admins-list-format: "%status% %name% [%rank%] – %duty%"
+# Admins display format
+admins-list-format: "%status% %name% [%rank%&r] – %duty%"
 hide-format: "&kСкрыт&f"
 
-# Duty levels configuration
 duty-levels:
-  dev:
-    permission: unsubduty.role.dev
-    to-group: dev
-    rank-name: "&bDeveloper"
-    priority: 1
-    join-message: "&aПрава разработчика получены"
-    leave-message: "&cПрава разработчика отозваны"
-  
+
   moderator:
     permission: unsubduty.role.moderator
     to-group: moderator

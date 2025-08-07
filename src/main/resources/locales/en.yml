@@ -1,0 +1,57 @@
+# English localization for UnsubDuty
+prefix: "&a[UnsubDuty] &r"
+no_permission: "&cYou do not have permission to use this command."
+player_only: "&cThis command can only be used by players."
+player_not_found: "&cPlayer not found: %player%"
+invalid_rank: "&cInvalid rank: %rank%"
+no_ranks_configured: "&cNo duty ranks configured!"
+
+# Command /duty
+duty_title: "&a=-= UnsubDuty %version% =-="
+duty_available_commands: "&aAvailable commands:"
+duty_help_hide: "&a/duty hide - Hide your nickname"
+duty_help_show: "&a/duty show - Show your nickname"
+duty_help_set: "&a/duty set <player> <rank> - Set rank for a player"
+duty_help_roles: "&a/duty roles - List all ranks"
+duty_usage: "&cUsage: /duty <hide|show|set|roles>"
+
+# Command /duty hide
+hide_success: "&aYour nickname is now hidden in /admins."
+
+# Command /duty show
+show_success: "&aYour nickname is now visible in /admins."
+
+# Command /duty set
+set_usage: "&cUsage: /duty set <player> <rank>"
+set_success: "&aSuccessfully set %target%'s rank to %rank%"
+set_target_message: "&aYour duty rank has been set to %rank%"
+set_failed: "&cFailed to set rank for %target%"
+
+# Command /duty roles
+available_roles: "&aAvailable duty roles:"
+role_format: "  %name% &7(%key%)"
+
+# Command /admins
+admins_title: "&a=== Duty Admins ==="
+no_duty_admins: "&eNo duty admins online."
+in_duty: "&aIn duty"
+not_in_duty: "&cNot in duty"
+hidden_name: "&kHidden&f"
+hidden_admin: "&7%name%&f"
+
+# System messages
+plugin_enabled: "UnsubDuty enabled successfully!"
+plugin_disabled: "UnsubDuty disabled!"
+luckperms_not_found: "LuckPerms not found! Disabling plugin..."
+loading_duty_levels: "Loading duty ranks from config.yml..."
+loaded_duty_rank: "Loaded duty rank: %key% [permission=%permission%, to-group=%group%, rank-name=%name%, priority=%priority%]"
+total_ranks_loaded: "Total duty ranks loaded: %count%"
+no_duty_levels: "No duty-levels section found in config.yml!"
+default_access_message: "&cYour role is not configured."
+admins_list_format: "%status% %name% [%rank%&r] – %duty%"
+hide_format: "&kHidden&f"
+
+# Errors
+cannot_handle_op: "&cPlugin cannot properly handle this player."
+group_not_configured: "&cError: group for rank is not configured."
+user_data_error: "&cError retrieving user data."

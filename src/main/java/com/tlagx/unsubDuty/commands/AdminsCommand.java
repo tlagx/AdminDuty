@@ -26,31 +26,31 @@ public class AdminsCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("unsubduty.view")) {
-            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+            sender.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
             return true;
         }
 
         List<Player> admins = dutyService.getAllDutyAdmins();
         
         if (admins.isEmpty()) {
-            sender.sendMessage(ChatColor.YELLOW + "No duty admins online.");
+            sender.sendMessage(plugin.getLocaleManager().getColor("no_duty_admins"));
             return true;
         }
 
-        sender.sendMessage(ChatColor.GREEN + "=== Duty Admins ===");
+        sender.sendMessage(plugin.getLocaleManager().getColor("admins_title"));
         
         for (Player admin : admins) {
             String rankName = dutyService.getRankName(admin);
             boolean isInDuty = dutyService.isPlayerInDuty(admin, dutyService.findDutyRank(admin).orElse(null));
             boolean isHidden = hideService.isHidden(admin);
             
-            String status = isInDuty ? ChatColor.GREEN + "В дежурстве" : ChatColor.RED + "Не в дежурстве";
+            String status = isInDuty ? plugin.getLocaleManager().getColor("in_duty") : plugin.getLocaleManager().getColor("not_in_duty");
             String name = admin.getName();
             
             if (isHidden && !sender.hasPermission("unsubduty.admin") && !sender.hasPermission("unsubduty.see-hidden")) {
-                name = ChatColor.translateAlternateColorCodes('&', "&kСкрыт&f");
+                name = plugin.getLocaleManager().getColor("hidden_name");
             } else if (isHidden && sender.hasPermission("unsubduty.admin")) {
-                name = ChatColor.translateAlternateColorCodes('&', "&7" + admin.getName() + "&f");
+                name = plugin.getLocaleManager().getColor("hidden_admin").replace("%name%", admin.getName());
             }
             
             String format = ChatColor.translateAlternateColorCodes('&', 
