@@ -10,15 +10,15 @@ import com.tlagx.unsubduty.commands.DutyCommand;
 import com.tlagx.unsubduty.config.ConfigManager;
 import com.tlagx.unsubduty.listeners.PlayerListener;
 import com.tlagx.unsubduty.services.DutyService;
-import com.tlagx.unsubduty.storage.AdminStorage;
+import com.tlagx.unsubduty.services.HideService;
 
 import net.luckperms.api.LuckPerms;
 
 public final class UnsubDuty extends JavaPlugin {
     private static UnsubDuty instance;
     private ConfigManager configManager;
-    private AdminStorage adminStorage;
     private DutyService dutyService;
+    private HideService hideService;
     private LuckPerms luckPerms;
 
     @Override
@@ -34,8 +34,8 @@ public final class UnsubDuty extends JavaPlugin {
         saveDefaultConfig();
         
         this.configManager = new ConfigManager(this);
-        this.adminStorage = new AdminStorage(this);
-        this.dutyService = new DutyService(this, luckPerms, configManager, adminStorage);
+        this.dutyService = new DutyService(this, luckPerms, configManager);
+        this.hideService = new HideService();
         
         registerCommands();
         registerEvents();
@@ -45,9 +45,6 @@ public final class UnsubDuty extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (adminStorage != null) {
-            adminStorage.save();
-        }
         getLogger().info("UnsubDuty disabled!");
     }
 
@@ -62,8 +59,8 @@ public final class UnsubDuty extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("alogin").setExecutor(new AdminCommand(dutyService));
-        getCommand("admins").setExecutor(new AdminsCommand(dutyService));
-        getCommand("duty").setExecutor(new DutyCommand(dutyService));
+        getCommand("admins").setExecutor(new AdminsCommand(dutyService, hideService, this));
+        getCommand("duty").setExecutor(new DutyCommand(dutyService, hideService, this));
     }
 
     private void registerEvents() {
@@ -73,7 +70,6 @@ public final class UnsubDuty extends JavaPlugin {
     public void reload() {
         reloadConfig();
         configManager.reload();
-        adminStorage.reload();
     }
 
     public static UnsubDuty getInstance() {
@@ -84,12 +80,12 @@ public final class UnsubDuty extends JavaPlugin {
         return configManager;
     }
 
-    public AdminStorage getAdminStorage() {
-        return adminStorage;
-    }
-
     public DutyService getDutyService() {
         return dutyService;
+    }
+
+    public HideService getHideService() {
+        return hideService;
     }
 
     public LuckPerms getLuckPerms() {

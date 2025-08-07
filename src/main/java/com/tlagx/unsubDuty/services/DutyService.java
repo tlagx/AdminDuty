@@ -1,8 +1,9 @@
 package com.tlagx.unsubduty.services;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,111 +11,197 @@ import org.bukkit.entity.Player;
 
 import com.tlagx.unsubduty.UnsubDuty;
 import com.tlagx.unsubduty.config.ConfigManager;
-import com.tlagx.unsubduty.models.AdminData;
 import com.tlagx.unsubduty.models.DutyRank;
-import com.tlagx.unsubduty.storage.AdminStorage;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
-import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.types.InheritanceNode;
+import net.luckperms.api.node.types.PermissionNode;
 
 public class DutyService {
     private final UnsubDuty plugin;
     private final LuckPerms luckPerms;
     private final ConfigManager configManager;
-    private final AdminStorage adminStorage;
+    private boolean debug = false;
 
-    public DutyService(UnsubDuty plugin, LuckPerms luckPerms, ConfigManager configManager, AdminStorage adminStorage) {
+    public DutyService(UnsubDuty plugin, LuckPerms luckPerms, ConfigManager configManager) {
         this.plugin = plugin;
         this.luckPerms = luckPerms;
         this.configManager = configManager;
-        this.adminStorage = adminStorage;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    private void debugLog(String message) {
+        if (debug) {
+            plugin.getLogger().info("[DEBUG] " + message);
+        }
     }
 
     public boolean toggleDuty(Player player) {
-        UUID uuid = player.getUniqueId();
-        AdminData data = adminStorage.getAdminData(uuid);
-        
-        if (data == null) {
-            Optional<DutyRank> rank = findDutyRank(player);
-            if (!rank.isPresent()) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', 
-                    configManager.getDefaultAccessMessage()));
-                return false;
-            }
-            
-            data = new AdminData(player.getName(), rank.get().getKey(), false, false);
-            adminStorage.setAdminData(uuid, data);
+        if (player.isOp()) {
+            player.sendMessage(ChatColor.RED + "Плагин не может правильно обработать данного игрока.");
+            return false;
         }
 
-        DutyRank rank = configManager.getDutyRankByKey(data.getActiveRank()).orElse(null);
-        if (rank == null) return false;
+        Optional<DutyRank> rank = findDutyRank(player);
+        if (!rank.isPresent()) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', 
+                configManager.getDefaultAccessMessage()));
+            return false;
+        }
 
-        if (data.isInDuty()) {
-            // Leave duty
-            data.setInDuty(false);
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', rank.getLeaveMessage()));
+        DutyRank dutyRank = rank.get();
+        
+        // Validate the toGroup is not null
+        if (dutyRank.getToGroup() == null || dutyRank.getToGroup().trim().isEmpty()) {
+            player.sendMessage(ChatColor.RED + "Ошибка: группа для ранга не настроена.");
+            plugin.getLogger().warning("Duty rank " + dutyRank.getKey() + " has null or empty toGroup!");
+            return false;
+        }
+        
+        // Check current group
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user == null) {
+            player.sendMessage(ChatColor.RED + "Ошибка при получении данных пользователя.");
+            plugin.getLogger().warning("Could not get LuckPerms user for " + player.getName());
+            return false;
+        }
+
+        // Check if player has the target group
+        boolean hasTargetGroup = user.getNodes().stream()
+                .filter(InheritanceNode.class::isInstance)
+                .map(InheritanceNode.class::cast)
+                .anyMatch(node -> node.getGroupName().equals(dutyRank.getToGroup()));
+
+        if (hasTargetGroup) {
+            // Remove the target group (leave duty)
+            // Use the leave message of the currently assigned group, not the found rank
+            // Find the actual group the player has from LuckPerms nodes
+            String currentGroup = user.getNodes().stream()
+                .filter(InheritanceNode.class::isInstance)
+                .map(InheritanceNode.class::cast)
+                .filter(node -> configManager.getAllDutyRanksSorted().stream()
+                    .anyMatch(r -> r.getToGroup().equals(node.getGroupName())))
+                .map(InheritanceNode::getGroupName)
+                .findFirst()
+                .orElse(dutyRank.getToGroup());
+
+            // Find the DutyRank for the current group to get the correct leave message
+            DutyRank currentRank = configManager.getAllDutyRanksSorted().stream()
+                .filter(r -> r.getToGroup().equals(currentGroup))
+                .findFirst()
+                .orElse(dutyRank);
+
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', currentRank.getLeaveMessage()));
             
-            // Move back to from-group
-            UserManager userManager = luckPerms.getUserManager();
-            User user = userManager.getUser(player.getUniqueId());
-            if (user != null) {
-                luckPerms.getUserManager().modifyUser(player.getUniqueId(), u -> {
-                    u.data().add(InheritanceNode.builder(rank.getFromGroup()).build());
-                    u.data().remove(InheritanceNode.builder(rank.getToGroup()).build());
-                });
-            }
+            luckPerms.getUserManager().modifyUser(player.getUniqueId(), u -> {
+                u.data().remove(InheritanceNode.builder(currentGroup).build());
+            });
+            
+            debugLog("Player " + player.getName() + " left duty group: " + currentGroup);
         } else {
-            // Enter duty
-            data.setInDuty(true);
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', rank.getJoinMessage()));
+            // Add the target group (enter duty)
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', dutyRank.getJoinMessage()));
             
-            // Move to duty group
-            UserManager userManager = luckPerms.getUserManager();
-            User user = userManager.getUser(player.getUniqueId());
-            if (user != null) {
-                luckPerms.getUserManager().modifyUser(player.getUniqueId(), u -> {
-                    u.data().add(InheritanceNode.builder(rank.getToGroup()).build());
-                    u.data().remove(InheritanceNode.builder(rank.getFromGroup()).build());
+            luckPerms.getUserManager().modifyUser(player.getUniqueId(), u -> {
+                // Remove any other duty groups first
+                configManager.getAllDutyRanksSorted().forEach(r -> {
+                    if (r.getToGroup() != null && !r.getToGroup().trim().isEmpty()) {
+                        u.data().remove(InheritanceNode.builder(r.getToGroup()).build());
+                    }
                 });
-            }
+                // Add the target group without removing default
+                u.data().add(InheritanceNode.builder(dutyRank.getToGroup()).build());
+            });
+            
+            debugLog("Player " + player.getName() + " entered duty group: " + dutyRank.getToGroup());
         }
-        
-        adminStorage.save();
+
         return true;
     }
 
     public Optional<DutyRank> findDutyRank(Player player) {
-        return configManager.getAllDutyRanksSorted().stream()
-                .filter(rank -> player.hasPermission(rank.getPermission()))
-                .findFirst();
-    }
-
-    public void setAdminRank(UUID uuid, String rankKey) {
-        AdminData data = adminStorage.getAdminData(uuid);
-        if (data == null) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null) {
-                data = new AdminData(player.getName(), rankKey, false, false);
-            } else {
-                return;
-            }
+        // Debug: Log all permissions the player has
+        plugin.getLogger().info("Checking permissions for player: " + player.getName());
+        
+        // Get all ranks sorted by priority (highest first)
+        List<DutyRank> validRanks = configManager.getAllDutyRanksSorted().stream()
+                .sorted((r1, r2) -> Integer.compare(r2.getPriority(), r1.getPriority()))
+                .filter(rank -> {
+                    boolean hasPermission = player.hasPermission(rank.getPermission());
+                    plugin.getLogger().info("Rank " + rank.getKey() + " (" + rank.getPermission() + "): " + hasPermission);
+                    return hasPermission;
+                })
+                .collect(Collectors.toList());
+        
+        if (validRanks.isEmpty()) {
+            plugin.getLogger().warning("No valid duty ranks found for player: " + player.getName());
         }
         
-        data.setActiveRank(rankKey);
-        adminStorage.save();
+        return validRanks.stream().findFirst();
     }
 
-    public void setHideStatus(UUID uuid, boolean hide) {
-        AdminData data = adminStorage.getAdminData(uuid);
-        if (data != null) {
-            data.setHideStatus(hide);
-            adminStorage.save();
+    public boolean setAdminRank(UUID uuid, String rankKey) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return false;
+
+        Optional<DutyRank> rank = configManager.getDutyRankByKey(rankKey);
+        if (!rank.isPresent()) {
+            plugin.getLogger().warning("Invalid rank key: " + rankKey);
+            return false;
         }
+
+        // Remove all existing duty role permissions
+        configManager.getAllDutyRanksSorted().forEach(r -> {
+            luckPerms.getUserManager().modifyUser(uuid, u -> {
+                u.data().remove(PermissionNode.builder("unsubduty.role." + r.getKey()).build());
+            });
+        });
+
+        // Add new role permission
+        luckPerms.getUserManager().modifyUser(uuid, u -> {
+            u.data().add(PermissionNode.builder("unsubduty.role." + rankKey).build());
+            u.data().add(PermissionNode.builder("unsubduty.use").build());
+        });
+
+        plugin.getLogger().info("Set admin rank for " + player.getName() + " to " + rankKey);
+        return true;
     }
 
-    public Map<UUID, AdminData> getAllAdminData() {
-        return adminStorage.getAllAdminData();
+    public List<Player> getAllDutyAdmins() {
+        return Bukkit.getOnlinePlayers().stream()
+                .filter(player -> findDutyRank(player).isPresent())
+                .collect(Collectors.toList());
+    }
+
+    public String getRankName(Player player) {
+        Optional<DutyRank> rank = findDutyRank(player);
+        if (!rank.isPresent()) {
+            plugin.getLogger().warning("No rank found for player: " + player.getName());
+            return "Unknown";
+        }
+        
+        String rankName = rank.get().getRankName();
+        if (rankName == null || rankName.trim().isEmpty()) {
+            plugin.getLogger().warning("Empty rank name for player: " + player.getName());
+            return "Unknown";
+        }
+        
+        return rankName;
+    }
+
+    public boolean isPlayerInDuty(Player player, DutyRank rank) {
+        if (rank == null) return false;
+        
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user == null) return false;
+        
+        return user.getNodes().stream()
+                .filter(InheritanceNode.class::isInstance)
+                .map(InheritanceNode.class::cast)
+                .anyMatch(node -> node.getGroupName().equals(rank.getToGroup()));
     }
 }

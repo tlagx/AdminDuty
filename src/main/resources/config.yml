@@ -10,38 +10,42 @@ hide-format: "&kСкрыт&f"
 
 # Duty levels configuration
 duty-levels:
+  dev:
+    permission: unsubduty.role.dev
+    to-group: dev
+    rank-name: "&bDeveloper"
+    priority: 1
+    join-message: "&aПрава разработчика получены"
+    leave-message: "&cПрава разработчика отозваны"
+  
   moderator:
     permission: unsubduty.role.moderator
-    from-group: default_moder
-    to-group: duty_moder
+    to-group: moderator
     rank-name: "&aModerator"
-    priority: 1
+    priority: 2
     join-message: "&aТы вошёл как Модератор"
     leave-message: "&cDuty отключён"
   
   admin:
     permission: unsubduty.role.admin
-    from-group: default_admin
-    to-group: duty_admin
+    to-group: admin
     rank-name: "&cAdministrator"
-    priority: 2
+    priority: 3
     join-message: "&aПрава Администратора получены"
     leave-message: "&cПрава Администратора отозваны"
   
   senior:
     permission: unsubduty.role.senior
-    from-group: default_senior
-    to-group: duty_senior
+    to-group: senior
     rank-name: "&6Senior Admin"
-    priority: 3
+    priority: 4
     join-message: "&aПрава Старшего Администратора получены"
     leave-message: "&cПрава Старшего Администратора отозваны"
   
   head:
     permission: unsubduty.role.head
-    from-group: default_head
-    to-group: duty_head
+    to-group: head
     rank-name: "&4Head Admin"
-    priority: 4
+    priority: 5
     join-message: "&aПрава Главного Администратора получены"
     leave-message: "&cПрава Главного Администратора отозваны"

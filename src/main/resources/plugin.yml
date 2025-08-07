@@ -24,7 +24,7 @@ commands:
 permissions:
   unsubduty.use:
     description: Allows using /alogin command
-    default: op
+    default: true
   unsubduty.view:
     description: Allows viewing admin list and duty notifications
     default: op
