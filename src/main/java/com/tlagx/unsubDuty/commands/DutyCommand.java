@@ -97,10 +97,30 @@ public class DutyCommand implements CommandExecutor {
                 ranks.forEach(rank -> {
                     String rankName = rank.getRankName() != null ? rank.getRankName() : "Unknown";
                     String key = rank.getKey() != null ? rank.getKey() : "unknown";
-                    player.sendMessage(plugin.getLocaleManager().getColor("role_format")
-                            .replace("%name%", rankName)
-                            .replace("%key%", key));
+                    
+                    // Apply color translation to the rank name itself
+                    String coloredRankName = org.bukkit.ChatColor.translateAlternateColorCodes('&', rankName);
+                    
+                    String message = plugin.getLocaleManager().getColor("role_format")
+                            .replace("%name%", coloredRankName)
+                            .replace("%key%", key);
+                    player.sendMessage(message);
                 });
+                break;
+
+            case "reload":
+                if (!player.hasPermission("unsubduty.admin")) {
+                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
+                    return true;
+                }
+
+                try {
+                    plugin.reload();
+                    player.sendMessage(plugin.getLocaleManager().getColor("reload_success"));
+                } catch (Exception e) {
+                    player.sendMessage(plugin.getLocaleManager().getColor("reload_failed"));
+                    plugin.getLogger().warning("Failed to reload configs: " + e.getMessage());
+                }
                 break;
 
             default:

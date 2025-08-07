@@ -31,6 +31,10 @@ set_failed: "&cFailed to set rank for %target%"
 available_roles: "&aAvailable duty roles:"
 role_format: "  %name% &7(%key%)"
 
+# Command /duty reload
+reload_success: "&aConfiguration successfully reloaded!"
+reload_failed: "&cFailed to reload configuration!"
+
 # Command /admins
 admins_title: "&a=== Duty Admins ==="
 no_duty_admins: "&eNo duty admins online."

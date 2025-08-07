@@ -35,6 +35,7 @@ public class DutyTabCompleter implements TabCompleter {
             if (player.hasPermission("unsubduty.admin")) {
                 completions.add("set");
                 completions.add("roles");
+                completions.add("reload");
             }
             return completions.stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))

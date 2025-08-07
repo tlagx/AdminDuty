@@ -31,6 +31,10 @@ set_failed: "&cНе удалось установить ранг для %target%
 available_roles: "&aДоступные ранги:"
 role_format: "  %name% &7(%key%)"
 
+# Команда /duty reload
+reload_success: "&aКонфигурация успешно перезагружена!"
+reload_failed: "&cОшибка при перезагрузке конфигурации!"
+
 # Команда /admins
 admins_title: "&aСписок администрации:"
 no_duty_admins: "&eНет администраторов онлайн."
