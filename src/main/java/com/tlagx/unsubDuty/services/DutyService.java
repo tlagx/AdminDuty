@@ -119,16 +119,14 @@ public class DutyService {
         return rank != null ? rank.getRankName() : "Unknown";
     }
 
-    public List<Player> getAllDutyAdmins() {
+    public List<Player> getAllAdmins() {
         return Bukkit.getOnlinePlayers().stream()
-                .filter(player -> findDutyRank(player).isPresent())
+                .filter(player -> permissionManager.getUserRole(player.getName()) != null)
                 .collect(Collectors.toList());
     }
 
     public boolean isPlayerInDuty(Player player, DutyRank rank) {
         if (rank == null) return false;
-        
-        String currentRole = permissionManager.getUserRole(player.getName());
-        return rank.getKey().equalsIgnoreCase(currentRole);
+        return luckPermsService.hasGroup(player, rank.getToGroup());
     }
 }

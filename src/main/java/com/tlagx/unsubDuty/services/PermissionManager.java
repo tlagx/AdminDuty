@@ -2,6 +2,8 @@ package com.tlagx.unsubduty.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -84,5 +86,26 @@ public class PermissionManager {
         } catch (IOException e) {
             plugin.getLogger().severe("Could not save perms.yml: " + e.getMessage());
         }
+    }
+
+    public List<String> getAllAdminUsernames() {
+        List<String> admins = new ArrayList<>();
+        
+        // Получаем всех пользователей из конфигурации
+        for (String username : permsConfig.getKeys(false)) {
+            if (!username.equals("admins")) {
+                String role = permsConfig.getString(username);
+                if (role != null) {
+                    admins.add(username);
+                }
+            }
+        }
+        
+        // Также проверяем секцию admins для обратной совместимости
+        if (permsConfig.contains("admins")) {
+            admins.addAll(permsConfig.getConfigurationSection("admins").getKeys(false));
+        }
+        
+        return admins;
     }
 }

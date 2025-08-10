@@ -1,6 +1,7 @@
 package com.tlagx.unsubduty.commands;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.tlagx.unsubduty.UnsubDuty;
+import com.tlagx.unsubduty.models.DutyRank;
 import com.tlagx.unsubduty.services.DutyService;
 import com.tlagx.unsubduty.services.HideService;
 
@@ -30,7 +32,7 @@ public class AdminsCommand implements CommandExecutor {
             return true;
         }
 
-        List<Player> admins = dutyService.getAllDutyAdmins();
+        List<Player> admins = dutyService.getAllAdmins();
         
         if (admins.isEmpty()) {
             sender.sendMessage(plugin.getLocaleManager().getColor("no_duty_admins"));
@@ -41,7 +43,8 @@ public class AdminsCommand implements CommandExecutor {
         
         for (Player admin : admins) {
             String rankName = dutyService.getRankName(admin);
-            boolean isInDuty = dutyService.isPlayerInDuty(admin, dutyService.findDutyRank(admin).orElse(null));
+            Optional<DutyRank> rank = dutyService.findDutyRank(admin);
+            boolean isInDuty = rank.isPresent() && dutyService.isPlayerInDuty(admin, rank.get());
             boolean isHidden = hideService.isHidden(admin);
             
             String status = isInDuty ? plugin.getLocaleManager().getColor("in_duty") : plugin.getLocaleManager().getColor("not_in_duty");

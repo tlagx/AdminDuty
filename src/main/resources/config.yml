@@ -8,7 +8,20 @@ default-access-message: "&cYour role is not configured."
 admins-list-format: "%status% %name% [%rank%&r] – %duty%"
 hide-format: "&kHidden&f"
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!                          WARNING                             !!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# ! The group specified in 'to-group' MUST be created MANUALLY     !
+# ! in LuckPerms before using this configuration!                  !
+# !                                                                !
+# ! This plugin ONLY provides the ability to toggle between:       !
+# !  - Player's default group (from LuckPerms)                     !
+# !  - The duty group specified in 'to-group'                      !
+# !                                                                !
+# ! It does NOT automatically create groups or manage permissions! !
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 duty-levels:
+
   helper:
     to-group: helper
     rank-name: "&7Helper"
