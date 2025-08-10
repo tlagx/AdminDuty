@@ -40,7 +40,10 @@ public class DutyCommand implements CommandExecutor {
         if (args.length == 0) {
             player.sendMessage(plugin.getLocaleManager().getColor("duty_title").replace("%version%", plugin.getDescription().getVersion()));
             player.sendMessage(plugin.getLocaleManager().getColor("duty_available_commands"));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_admins"));
             player.sendMessage(plugin.getLocaleManager().getColor("duty_help_set"));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_remove"));
+            player.sendMessage(plugin.getLocaleManager().getColor("duty_help_ahide"));
             player.sendMessage(plugin.getLocaleManager().getColor("duty_help_roles"));
             return true;
         }

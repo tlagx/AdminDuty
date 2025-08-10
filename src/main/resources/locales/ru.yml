@@ -9,10 +9,11 @@ no_ranks_configured: "&cНастроенные ранги отсутствуют
 # Команда /duty
 duty_title: "&a=-= UnsubDuty %version% =-="
 duty_available_commands: "&aДоступные команды:"
-duty_help_hide: "&a/duty hide - Скрыть никнейм"
-duty_help_show: "&a/duty show - Показать никнейм"
+duty_help_ahide: "&a/ahide - Скрыть никнейм в списке /admins"
 duty_help_set: "&a/duty set <игрок> <ранг> - Установить ранг игроку"
+duty_help_remove: "&a/duty remove - Снять ранг у игрока"
 duty_help_roles: "&a/duty roles - Список всех рангов"
+duty_help_admins: "&a/admins - Список администраторов"
 duty_usage: "&cИспользование: /duty <hide|show|set|roles>"
 
 # Команда /duty hide

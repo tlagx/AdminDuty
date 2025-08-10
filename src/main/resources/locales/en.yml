@@ -9,10 +9,11 @@ no_ranks_configured: "&cNo duty ranks configured!"
 # Command /duty
 duty_title: "&a=-= UnsubDuty %version% =-="
 duty_available_commands: "&aAvailable commands:"
-duty_help_hide: "&a/duty hide - Hide your nickname"
-duty_help_show: "&a/duty show - Show your nickname"
+duty_help_ahide: "&a/duty hide - Hide your nickname in the duty list."
 duty_help_set: "&a/duty set <player> <rank> - Set rank for a player"
+duty_help_remove: "&a/duty remove <player> - Remove rank for a player"
 duty_help_roles: "&a/duty roles - List all ranks"
+duty_help_admins: "&a/admins - List all admins online"
 duty_usage: "&cUsage: /duty <hide|show|set|roles>"
 
 # Command /duty hide
