@@ -36,12 +36,13 @@ public class DutyTabCompleter implements TabCompleter {
                 completions.add("set");
                 completions.add("roles");
                 completions.add("reload");
+                completions.add("remove");
             }
             return completions.stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
-            // Second argument for "set": player names
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("remove"))) {
+            // Second argument for "set" and "remove": player names
             if (player.hasPermission("unsubduty.admin")) {
                 return Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)

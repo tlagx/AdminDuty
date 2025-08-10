@@ -3,6 +3,7 @@ package com.tlagx.unsubduty.commands;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,16 +13,19 @@ import com.tlagx.unsubduty.UnsubDuty;
 import com.tlagx.unsubduty.models.DutyRank;
 import com.tlagx.unsubduty.services.DutyService;
 import com.tlagx.unsubduty.services.HideService;
+import com.tlagx.unsubduty.services.PermissionManager;
 
 public class DutyCommand implements CommandExecutor {
     private final DutyService dutyService;
     private final HideService hideService;
     private final UnsubDuty plugin;
+    private final PermissionManager permissionManager;
 
-    public DutyCommand(DutyService dutyService, HideService hideService, UnsubDuty plugin) {
+    public DutyCommand(DutyService dutyService, HideService hideService, UnsubDuty plugin, PermissionManager permissionManager) {
         this.dutyService = dutyService;
         this.hideService = hideService;
         this.plugin = plugin;
+        this.permissionManager = permissionManager;
     }
 
     @Override
@@ -106,6 +110,33 @@ public class DutyCommand implements CommandExecutor {
                             .replace("%key%", key);
                     player.sendMessage(message);
                 });
+                break;
+
+            case "remove":
+                if (!player.hasPermission("unsubduty.admin")) {
+                    player.sendMessage(plugin.getLocaleManager().getColor("no_permission"));
+                    return true;
+                }
+
+                if (args.length < 2) {
+                    player.sendMessage(ChatColor.RED + "Usage: /duty remove <username>");
+                    return true;
+                }
+
+                String targetName = args[1];
+                Player targetPlayer = Bukkit.getPlayer(targetName);
+                
+                if (targetPlayer == null) {
+                    player.sendMessage(plugin.getLocaleManager().getColor("player_not_found").replace("%player%", targetName));
+                    return true;
+                }
+
+                permissionManager.removeUserRole(targetName);
+                player.sendMessage(ChatColor.GREEN + "Removed all duty permissions from " + targetName);
+                
+                if (targetPlayer.isOnline()) {
+                    targetPlayer.sendMessage(ChatColor.YELLOW + "Your duty permissions have been removed by an administrator.");
+                }
                 break;
 
             case "reload":
