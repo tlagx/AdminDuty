@@ -35,11 +35,6 @@ public class DutyService {
     }
 
     public boolean toggleDuty(Player player) {
-        if (player.isOp()) {
-            player.sendMessage(ChatColor.RED + "Плагин не может правильно обработать данного игрока.");
-            return false;
-        }
-
         Optional<DutyRank> rank = findDutyRank(player);
         if (!rank.isPresent()) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', 
@@ -55,7 +50,25 @@ public class DutyService {
             return false;
         }
 
-        // Проверяем, есть ли уже группа в LuckPerms
+        // Handle special case for OP status
+        if ("OP".equalsIgnoreCase(dutyRank.getToGroup())) {
+            if (player.isOp()) {
+                // Remove OP status
+                player.setOp(false);
+                String leaveMessage = dutyRank.getLeaveMessage();
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', leaveMessage));
+                debugLog("Player " + player.getName() + " OP status removed");
+            } else {
+                // Add OP status
+                player.setOp(true);
+                String joinMessage = dutyRank.getJoinMessage();
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', joinMessage));
+                debugLog("Player " + player.getName() + " OP status granted");
+            }
+            return true;
+        }
+
+        // Handle regular LuckPerms groups
         boolean hasGroupInLuckPerms = luckPermsService.hasGroup(player, dutyRank.getToGroup());
 
         if (hasGroupInLuckPerms) {
@@ -120,6 +133,7 @@ public class DutyService {
     }
 
     public List<Player> getAllAdmins() {
+        // Enhanced method to detect all admins including those hidden by third-party plugins
         return Bukkit.getOnlinePlayers().stream()
                 .filter(player -> permissionManager.getUserRole(player.getName()) != null)
                 .collect(Collectors.toList());
@@ -127,6 +141,12 @@ public class DutyService {
 
     public boolean isPlayerInDuty(Player player, DutyRank rank) {
         if (rank == null) return false;
+        
+        // Handle special case for OP status
+        if ("OP".equalsIgnoreCase(rank.getToGroup())) {
+            return player.isOp();
+        }
+        
         return luckPermsService.hasGroup(player, rank.getToGroup());
     }
 }

@@ -13,6 +13,8 @@ hide-format: "&kHidden&f"
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # ! The group specified in 'to-group' MUST be created MANUALLY     !
 # ! in LuckPerms before using this configuration!                  !
+# ! if 'to-group: OP', user grants OP-status                       !
+# !                                                                !
 # !                                                                !
 # ! This plugin ONLY provides the ability to toggle between:       !
 # !  - Player's default group (from LuckPerms)                     !
@@ -26,33 +28,40 @@ duty-levels:
     to-group: helper
     rank-name: "&7Helper"
     priority: 1
-    join-message: "&aYou started duty as Helper"
-    leave-message: "&cYou left Helper duty"
+    join-message: "&aYou started duty as &7Helper"
+    leave-message: "&cYou left &7Helper&c duty"
 
   moderator:
     to-group: moderator
     rank-name: "&aModerator"
     priority: 2
     join-message: "&aYou started duty as Moderator"
-    leave-message: "&cYou left Moderator duty"
+    leave-message: "&cYou left &aModerator&c duty"
   
   admin:
     to-group: admin
     rank-name: "&cAdministrator"
     priority: 3
-    join-message: "&aYou started duty as Administrator"
+    join-message: "&aYou started duty as &cAdministrator"
     leave-message: "&cYou left Administrator duty"
   
   senior:
     to-group: senior
     rank-name: "&6Senior Admin"
     priority: 4
-    join-message: "&aYou started duty as Senior Administrator"
-    leave-message: "&cYou left Senior Administrator duty"
+    join-message: "&aYou started duty as &6Senior Administrator"
+    leave-message: "&cYou left Senior Administrator&c duty"
   
   head:
     to-group: head
     rank-name: "&4Head Admin"
     priority: 5
-    join-message: "&aYou started duty as Head Administrator"
-    leave-message: "&cYou left Head Administrator duty"
+    join-message: "&aYou started duty as &4Head Administrator"
+    leave-message: "&cYou left &4Head Administrator&c duty"
+
+  operator:
+    to-group: OP
+    rank-name: "&4&lServer Operator"
+    priority: 5
+    join-message: "&aYou started duty as &4&lOPERATOR"
+    leave-message: "&cYou left &4&lOPERATOR&r&c duty"
