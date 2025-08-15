@@ -6,7 +6,6 @@ default-access-message: "&cYour role is not configured."
 
 # Admins display format
 admins-list-format: "%status% %name% [%rank%&r] – %duty%"
-hide-format: "&kHidden&f"
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # !!                          WARNING                             !!

@@ -1,6 +1,6 @@
 name: UnsubDuty
 main: com.tlagx.unsubduty.UnsubDuty
-version: 1.5.2.4
+version: 1.5.3.0
 author: tlagx
 description: Duty system plugin for Bukkit servers with flexible configuration
 

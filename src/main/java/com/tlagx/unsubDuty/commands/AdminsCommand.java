@@ -2,6 +2,7 @@ package com.tlagx.unsubduty.commands;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -34,14 +35,21 @@ public class AdminsCommand implements CommandExecutor {
 
         List<Player> admins = dutyService.getAllAdmins();
         
-        if (admins.isEmpty()) {
+        // Filter out hidden players completely
+        List<Player> visibleAdmins = admins.stream()
+            .filter(admin -> !hideService.isHidden(admin) || 
+                   sender.hasPermission("unsubduty.admin") || 
+                   sender.hasPermission("unsubduty.see-hidden"))
+            .collect(Collectors.toList());
+        
+        if (visibleAdmins.isEmpty()) {
             sender.sendMessage(plugin.getLocaleManager().getColor("no_duty_admins"));
             return true;
         }
 
         sender.sendMessage(plugin.getLocaleManager().getColor("admins_title"));
         
-        for (Player admin : admins) {
+        for (Player admin : visibleAdmins) {
             String rankName = dutyService.getRankName(admin);
             Optional<DutyRank> rank = dutyService.findDutyRank(admin);
             boolean isInDuty = rank.isPresent() && dutyService.isPlayerInDuty(admin, rank.get());
@@ -50,9 +58,8 @@ public class AdminsCommand implements CommandExecutor {
             String status = isInDuty ? plugin.getLocaleManager().getColor("in_duty") : plugin.getLocaleManager().getColor("not_in_duty");
             String name = admin.getName();
             
-            if (isHidden && !sender.hasPermission("unsubduty.admin") && !sender.hasPermission("unsubduty.see-hidden")) {
-                name = plugin.getLocaleManager().getColor("hidden_name");
-            } else if (isHidden && sender.hasPermission("unsubduty.admin")) {
+            // For admins with special permissions, show hidden players with indicator
+            if (isHidden && (sender.hasPermission("unsubduty.admin") || sender.hasPermission("unsubduty.see-hidden"))) {
                 name = plugin.getLocaleManager().getColor("hidden_admin").replace("%name%", admin.getName());
             }
             
