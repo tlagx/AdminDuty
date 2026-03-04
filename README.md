@@ -1,4 +1,4 @@
-# UnsubDuty  
+# UnsubDuty — Discontinued
 
 **UnsubDuty** is a plugin for Minecraft servers running on Bukkit/Spigot/Paper that provides an admin duty system with LuckPerms support.  
 
